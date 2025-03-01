@@ -1,0 +1,40 @@
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Build directory
+bin/
+build/
+
+# Dependency directories
+vendor/
+
+# Go module files
+go.sum
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and debugging
+*.log
+
+# Test coverage
+coverage.out
+
+# Temporary files
+tmp/
+*.tmp
+
+# Private keys and credentials (nếu có)
+*.key
+*.pem
+.env

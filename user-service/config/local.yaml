@@ -1,0 +1,15 @@
+server:
+  port: 5000
+  mode: "dev"
+mysql:
+  host: 127.0.0.1
+  port: 8811
+  username: "root"
+  password: "123456"
+  dbName: "user-service"
+  maxIdleConns: 10
+  maxOpenConns: 100
+  connMaxLifetime: 3600
+jwt:
+  TOKEN_HOUR_LIFESPAN: 1
+  JWT_EXPIRATION: 1h
