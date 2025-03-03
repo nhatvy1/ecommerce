@@ -11,8 +11,9 @@ type UserRouter struct{}
 func (ur *UserRouter) InitUserRouter(r *gin.RouterGroup) {
 	userController, _ := wire.InitUserRouterHandler()
 
-	userRouterGroup := r.Group("/user")
+	userRouterPublic := r.Group("/user")
 	{
-		userRouterGroup.GET("/", userController.GetUsers)
+		userRouterPublic.GET("/:id", userController.GetUser)
+		userRouterPublic.POST("/register", userController.Register)
 	}
 }

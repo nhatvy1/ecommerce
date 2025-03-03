@@ -2,12 +2,13 @@ package repositories
 
 import (
 	"user-service/global"
+	"user-service/internal/models"
 
 	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
-	GetUserById() int
+	GetUserById(id int) (*models.APIUser, error)
 }
 
 type userRepository struct {
@@ -20,6 +21,11 @@ func NewUserRepository() IUserRepository {
 	}
 }
 
-func (up *userRepository) GetUserById() int {
-	return 1
+func (up *userRepository) GetUserById(id int) (*models.APIUser, error) {
+	user := models.APIUser{}
+	if err := up.db.Model(&models.User{}).Where("id = ?", id).First(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }

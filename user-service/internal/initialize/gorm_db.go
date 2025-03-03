@@ -40,6 +40,7 @@ func connectionDb() (*gorm.DB, error) {
 	databaseConnection, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info), // Enable logging for debugging
 		// Logger: nil,
+		// Logger: logger.Default.LogMode(logger.Silent), // turn off logging error GORM
 	})
 
 	if err != nil {

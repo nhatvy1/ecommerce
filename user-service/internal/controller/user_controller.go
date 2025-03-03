@@ -2,8 +2,11 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"user-service/internal/services"
+	"user-service/internal/vo"
 	"user-service/pkg/response"
+	validations "user-service/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,11 +21,34 @@ func NewUserController(us services.IUserService) *UserController {
 	}
 }
 
-func (uc *UserController) GetUsers(ctx *gin.Context) {
-	data := uc.userService.GetUserById()
+func (uc *UserController) GetUser(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil || id <= 0 {
+		response.ErrResponse(ctx, http.StatusBadRequest, response.Msg[response.ErrPlsTryAgainLater], nil)
+		return
+	}
 
-	// if err != nil {
-	// 	response.ErrResponse(ctx, http.StatusNotFound, "Not found", nil)
-	// }
+	data, err := uc.userService.GetUserById(id)
+
+	if err != nil {
+		response.ErrResponse(ctx, http.StatusNotFound, "Not found", nil)
+		return
+	}
 	response.SuccessResponse(ctx, http.StatusOK, data)
+}
+
+func (uc *UserController) Register(ctx *gin.Context) {
+	user := vo.UserRegister{}
+
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		response.ErrResponse(ctx, http.StatusBadRequest, "Invalid request payload", err.Error())
+		return
+	}
+
+	if err := validations.ValidateFunc(user); err != nil {
+		response.ErrResponse(ctx, http.StatusBadRequest, "Validation failed", err)
+		return
+	}
+
+	response.SuccessResponse(ctx, http.StatusOK, user)
 }

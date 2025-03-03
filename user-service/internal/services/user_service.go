@@ -1,9 +1,13 @@
 package services
 
-import "user-service/internal/repositories"
+import (
+	"user-service/internal/models"
+	"user-service/internal/repositories"
+)
 
 type IUserService interface {
-	GetUserById() int
+	GetUserById(id int) (*models.APIUser, error)
+	Register() (int, error)
 }
 
 type userService struct {
@@ -16,6 +20,11 @@ func NewUserService(userRepo repositories.IUserRepository) IUserService {
 	}
 }
 
-func (us *userService) GetUserById() int {
-	return 10
+func (us *userService) GetUserById(id int) (*models.APIUser, error) {
+	user, err := us.userRepo.GetUserById(id)
+	return user, err
+}
+
+func (us *userService) Register() (int, error) {
+	return 1, nil
 }
