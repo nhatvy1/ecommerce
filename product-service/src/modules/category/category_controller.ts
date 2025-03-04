@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common'
-import { CategoryService } from './category.service'
+import { CategoryService } from './category_service'
 import { ResponseMessage } from 'src/shared/decorators/response_message_decorator'
 import { CreateCategoryDto } from './dto/create_category_dto'
 import { UpdateCategoryDto } from './dto/update_category_dto'

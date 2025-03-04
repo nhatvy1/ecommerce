@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { CategoryRepository } from './category.repository'
+import { CategoryRepository } from './category_repository'
 import { ErrorMessage } from 'src/utils/response'
 import { CreateCategoryDto, SaveCategoryDto } from './dto/create_category_dto'
 import { plainToInstance } from 'class-transformer'

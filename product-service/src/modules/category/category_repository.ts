@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Category } from './category.schema'
+import { Category } from './category_schema'
 import { FilterQuery, Model, QueryOptions, UpdateQuery } from 'mongoose'
 import { SaveCategoryDto } from './dto/create_category_dto'
 
