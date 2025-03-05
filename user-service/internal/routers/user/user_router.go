@@ -15,5 +15,6 @@ func (ur *UserRouter) InitUserRouter(r *gin.RouterGroup) {
 	{
 		userRouterPublic.GET("/:id", userController.GetUser)
 		userRouterPublic.POST("/register", userController.Register)
+		userRouterPublic.PATCH("/:id", userController.UpdateUser)
 	}
 }

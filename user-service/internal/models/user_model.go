@@ -1,22 +1,40 @@
 package models
 
-import "database/sql/driver"
+import (
+	"database/sql/driver"
+)
 
 type Status string
 
 const (
-	Active   Status = "active"
-	Inactive Status = "inactive"
-	Pending  Status = "pending"
+	Active  Status = "active"
+	Blocked Status = "blocked"
+	Pending Status = "pending"
 )
 
 func (p *Status) Scan(value interface{}) error {
-	*p = Status(value.([]byte))
+	b, ok := value.([]byte)
+	if !ok {
+		*p = Status(b)
+	}
 	return nil
 }
 
 func (p Status) Value() (driver.Value, error) {
 	return string(p), nil
+}
+
+func ToStatus(s string) Status {
+	switch s {
+	case string(Active):
+		return Active
+	case string(Blocked):
+		return Blocked
+	case string(Pending):
+		return Pending
+	default:
+		return Pending
+	}
 }
 
 type User struct {
@@ -32,4 +50,8 @@ type User struct {
 type APIUser struct {
 	FirstName string
 	LastName  string
+}
+
+type APIUserEmail struct {
+	Email string
 }

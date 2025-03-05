@@ -14,9 +14,8 @@ type UserRegister struct {
 }
 
 type UserUpdate struct {
-	FirstName string
-	LastName  string
-	NickName  string
-	Email     string
-	Password  string
+	FirstName *string `json:"first_name" validate:"omitempty,gte=1,lte=25"`
+	LastName  *string `json:"last_name" validate:"omitempty,gte=1,lte=25"`
+	NickName  *string `json:"nickname" validate:"omitempty,gte=1,lte=25"`
+	Status    *string `json:"status" validate:"omitempty,oneof=active blocked pending"`
 }
