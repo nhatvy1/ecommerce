@@ -1,7 +1,7 @@
 package initialize
 
 import (
-	validations "user-service/pkg/utils"
+	"user-service/pkg/utils/validations"
 
 	"github.com/gin-gonic/gin"
 )

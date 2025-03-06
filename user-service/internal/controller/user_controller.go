@@ -6,7 +6,7 @@ import (
 	"user-service/internal/services"
 	"user-service/internal/vo"
 	"user-service/pkg/response"
-	validations "user-service/pkg/utils"
+	"user-service/pkg/utils/validations"
 
 	"github.com/gin-gonic/gin"
 )
