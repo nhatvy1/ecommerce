@@ -9,7 +9,8 @@ import (
 func Run() *gin.Engine {
 	LoadConfig()
 
-	InitDbWithGorm()
+	// InitDbWithGorm()
+	InitMysqlC()
 
 	validations.InitValidator()
 

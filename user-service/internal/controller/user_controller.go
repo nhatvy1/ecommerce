@@ -28,7 +28,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) {
 		return
 	}
 
-	data, err := uc.userService.GetUserById(id)
+	data, err := uc.userService.GetUserById(ctx, id)
 
 	if err != nil {
 		response.ErrResponse(ctx, http.StatusNotFound, "Not found", nil)
@@ -50,7 +50,7 @@ func (uc *UserController) Register(ctx *gin.Context) {
 		return
 	}
 
-	data, err := uc.userService.Register(user)
+	data, err := uc.userService.Register(ctx, user)
 	if err != nil {
 		response.ErrResponse(ctx, http.StatusBadRequest, err.Error(), err)
 		return
@@ -60,30 +60,32 @@ func (uc *UserController) Register(ctx *gin.Context) {
 }
 
 func (uc *UserController) UpdateUser(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
+	// id, err := strconv.Atoi(ctx.Param("id"))
 
-	if err != nil || id <= 0 {
-		response.ErrResponse(ctx, http.StatusBadRequest, response.Msg[response.ErrPlsTryAgainLater], nil)
-		return
-	}
+	// if err != nil || id <= 0 {
+	// 	response.ErrResponse(ctx, http.StatusBadRequest, response.Msg[response.ErrPlsTryAgainLater], nil)
+	// 	return
+	// }
 
-	user := vo.UserUpdate{}
+	// user := vo.UserUpdate{}
 
-	if err := ctx.ShouldBindJSON(&user); err != nil {
-		response.ErrResponse(ctx, http.StatusBadRequest, "Invalid request payload", err.Error())
-		return
-	}
+	// if err := ctx.ShouldBindJSON(&user); err != nil {
+	// 	response.ErrResponse(ctx, http.StatusBadRequest, "Invalid request payload", err.Error())
+	// 	return
+	// }
 
-	if err := validations.ValidateFunc(user); err != nil {
-		response.ErrResponse(ctx, http.StatusBadRequest, "Validation failed", err)
-		return
-	}
+	// if err := validations.ValidateFunc(user); err != nil {
+	// 	response.ErrResponse(ctx, http.StatusBadRequest, "Validation failed", err)
+	// 	return
+	// }
 
-	data, err := uc.userService.UpdateUser(id, &user)
-	if err != nil {
-		response.ErrResponse(ctx, http.StatusBadRequest, err.Error(), err)
-		return
-	}
+	// data, err := uc.userService.UpdateUser(id, &user)
+	// if err != nil {
+	// 	response.ErrResponse(ctx, http.StatusBadRequest, err.Error(), err)
+	// 	return
+	// }
 
+	// response.SuccessResponse(ctx, http.StatusOK, data)
+	data := uc.userService.UpdateUser(ctx)
 	response.SuccessResponse(ctx, http.StatusOK, data)
 }

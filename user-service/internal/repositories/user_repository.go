@@ -1,60 +1,65 @@
 package repositories
 
 import (
+	"context"
 	"user-service/global"
-	"user-service/internal/models"
-
-	"gorm.io/gorm"
+	"user-service/internal/database"
 )
 
 type (
 	IUserRepository interface {
-		FindById(id int) (*models.APIUser, error)
-		FindByEmail(email string) (*models.APIUserEmail, error)
-		Create(user *models.User) (*models.User, error)
-		Update(id int, user *models.User) (*models.User, error)
+		FindById(ctx context.Context, id int) (*database.User, error)
+		FindByEmail(ctx context.Context, email string) (*database.User, error)
+		Create(ctx context.Context, user *database.User) (int, error)
+		Update(ctx context.Context) int
 	}
 
 	userRepository struct {
-		db *gorm.DB
+		db *database.Queries
 	}
 )
 
 func NewUserRepository() IUserRepository {
 	return &userRepository{
-		db: global.MySQL_Gorm,
+		db: database.New(global.MySQL_SQLC),
 	}
 }
 
-func (userRepo *userRepository) FindById(id int) (*models.APIUser, error) {
-	user := models.APIUser{}
-	if err := userRepo.db.Model(&models.User{}).Where("id = ?", id).First(&user).Error; err != nil {
+func (userRepo *userRepository) FindById(ctx context.Context, id int) (*database.User, error) {
+	user, err := userRepo.db.FindById(ctx, 1)
+	if err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (userRepo *userRepository) FindByEmail(email string) (*models.APIUserEmail, error) {
-	user := models.APIUserEmail{}
+func (userRepo *userRepository) FindByEmail(ctx context.Context, email string) (*database.User, error) {
+	user, err := userRepo.db.FindByEmail(ctx, email)
 
-	if err := userRepo.db.Model(&models.User{}).Where("email = ?", email).First(&user).Error; err != nil {
+	if err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
-func (userRepo *userRepository) Create(user *models.User) (*models.User, error) {
-	if err := userRepo.db.Create(&user).Error; err != nil {
-		return nil, err
+func (userRepo *userRepository) Create(ctx context.Context, user *database.User) (int, error) {
+	userCreate := database.CreateParams{
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Password:  user.Password,
 	}
-	return user, nil
+	_, err := userRepo.db.Create(ctx, userCreate)
+
+	if err != nil {
+		return 1, err
+	}
+
+	return 1, nil
 }
 
-func (userRepo *userRepository) Update(id int, user *models.User) (*models.User, error) {
-	if err := userRepo.db.Where("id = ?", id).Updates(&user).Error; err != nil {
-		return nil, err
-	}
-	return user, nil
+func (userRepo *userRepository) Update(ctx context.Context) int {
+	return 1
 }

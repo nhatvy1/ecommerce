@@ -1,8 +1,9 @@
 package services
 
 import (
+	"context"
 	"errors"
-	"user-service/internal/models"
+	"user-service/internal/database"
 	"user-service/internal/repositories"
 	"user-service/internal/vo"
 	copy_helper "user-service/pkg/utils/copyhelper"
@@ -12,10 +13,10 @@ import (
 
 type (
 	IUserService interface {
-		GetUserById(id int) (*models.APIUser, error)
-		Register(user *vo.UserRegister) (int, error)
-		IsEmailRegistered(email string) (bool, error)
-		UpdateUser(id int, user *vo.UserUpdate) (int, error)
+		GetUserById(ctx context.Context, id int) (*database.User, error)
+		Register(ctx context.Context, user *vo.UserRegister) (int, error)
+		IsEmailRegistered(ctx context.Context, email string) (bool, error)
+		UpdateUser(ctx context.Context) int
 	}
 
 	userService struct {
@@ -31,8 +32,8 @@ func NewUserService(userRepo repositories.IUserRepository, modelConverter copy_h
 	}
 }
 
-func (us *userService) IsEmailRegistered(email string) (bool, error) {
-	userFound, err := us.userRepo.FindByEmail(email)
+func (us *userService) IsEmailRegistered(ctx context.Context, email string) (bool, error) {
+	userFound, err := us.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return false, err
 	}
@@ -44,22 +45,22 @@ func (us *userService) IsEmailRegistered(email string) (bool, error) {
 	return false, nil
 }
 
-func (us *userService) GetUserById(id int) (*models.APIUser, error) {
-	user, err := us.userRepo.FindById(id)
+func (us *userService) GetUserById(ctx context.Context, id int) (*database.User, error) {
+	user, err := us.userRepo.FindById(ctx, id)
 	return user, err
 }
 
-func (us *userService) Register(userRegister *vo.UserRegister) (int, error) {
-	userFound, _ := us.IsEmailRegistered(userRegister.Email)
+func (us *userService) Register(ctx context.Context, userRegister *vo.UserRegister) (int, error) {
+	userFound, _ := us.IsEmailRegistered(ctx, userRegister.Email)
 
 	if userFound {
 		return -1, errors.New("email already exists")
 	}
 
-	user := models.User{}
+	user := database.User{}
 	copier.Copy(&user, &userRegister)
 
-	_, err := us.userRepo.Create(&user)
+	_, err := us.userRepo.Create(ctx, &user)
 	if err != nil {
 		return -1, err
 	}
@@ -67,24 +68,8 @@ func (us *userService) Register(userRegister *vo.UserRegister) (int, error) {
 	return 1, nil
 }
 
-func (us *userService) UpdateUser(id int, userUpdate *vo.UserUpdate) (int, error) {
-	_, errUserNotFound := us.userRepo.FindById(id)
-	if errUserNotFound != nil {
-		return -1, errors.New("user not found")
-	}
+func (us *userService) UpdateUser(ctx context.Context) int {
 
-	user := models.User{}
-
-	us.modelConverter.Copy(&user, &userUpdate)
-
-	if userUpdate.Status != nil {
-		user.Status = models.ToStatus(*userUpdate.Status)
-	}
-
-	_, err := us.userRepo.Update(id, &user)
-	if err != nil {
-		return -1, errors.New("user not found")
-	}
-
-	return 1, nil
+	data := us.userRepo.Update(ctx)
+	return data
 }

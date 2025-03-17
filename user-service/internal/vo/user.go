@@ -10,7 +10,6 @@ type UserRegister struct {
 	Password  string `json:"password" validate:"required,gte=0,lte=25"`
 	FirstName string `json:"first_name" validate:"required,gte=0,lte=25"`
 	LastName  string `json:"last_name" validate:"required,gte=0,lte=25"`
-	NickName  string `json:"nickname"`
 }
 
 type UserUpdate struct {
