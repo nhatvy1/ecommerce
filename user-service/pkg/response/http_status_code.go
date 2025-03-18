@@ -1,16 +1,19 @@
 package response
 
 const (
-	ErrCodeSuccess      = 20001
-	ErrCodeParamInvalid = 20003
-	ErrInvalidToken     = 30001
-	ErrCodeNotFound     = 403
-	ErrPlsTryAgainLater = 40003
+	ErrCodeSuccess       = 20001 // Success
+	ErrCodeParamInvalid  = 20003 // Email is invalid
+	ErrInvalidToken      = 30001 // Token is invalid
+	ErrPlsTryAgainLater  = 40003
+	ErrCodeUserHasExists = 50001 // User has already registered,
+	ErrCodeAuthFailed    = 40005
 )
 
 var Msg = map[int]string{
-	ErrCodeSuccess:      "success",
-	ErrCodeParamInvalid: "Email is invalid",
-	ErrInvalidToken:     "Token is invalid",
-	ErrPlsTryAgainLater: "Please try again later",
+	ErrCodeSuccess:       "success",
+	ErrCodeParamInvalid:  "email is invalid",
+	ErrInvalidToken:      "token is invalid",
+	ErrPlsTryAgainLater:  "please try again later",
+	ErrCodeUserHasExists: "user has already registered",
+	ErrCodeAuthFailed:    "Authentication failed",
 }

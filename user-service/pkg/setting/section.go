@@ -25,4 +25,5 @@ type MySQLSetting struct {
 type JwtSetting struct {
 	TOKEN_HOUR_LIFESPAN uint   `mapstructure:"TOKEN_HOUR_LIFESPAN"`
 	JWT_EXPIRATION      string `mapstructure:"JWT_EXPIRATION"`
+	API_SECRET_KEY      string `mapstructure:"API_SECRET_KEY"`
 }

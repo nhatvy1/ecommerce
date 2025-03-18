@@ -1,5 +1,13 @@
 {
   "cSpell.words": [
-    "fdfsdfds"
+    "fdfsdfds",
+    "statementbegin",
+    "statementend",
+    "GOOSE_DBSTRING",
+    "sqlcgen",
+    "sqlgen",
+    "sqlc",
+    "execresult",
+    "narg"
   ]
 }

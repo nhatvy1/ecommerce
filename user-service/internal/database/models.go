@@ -5,15 +5,14 @@
 package database
 
 import (
-	"database/sql"
+	"time"
 )
 
-type User struct {
-	ID        int64
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+type UserBase struct {
+	UserID        int64
+	UserEmail     string
+	UserPassword  string
+	UserSalt      string
+	UserCreatedAt time.Time
+	UserUpdatedAt time.Time
 }

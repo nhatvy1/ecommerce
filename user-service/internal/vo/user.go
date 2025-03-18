@@ -1,15 +1,13 @@
 package vo
 
-type UserLogin struct {
-	Email    string
-	PassWord string
+type UserRegister struct {
+	UserEmail    string `json:"email" validate:"required,email"`
+	UserPassword string `json:"password" validate:"required,gte=0,lte=25"`
 }
 
-type UserRegister struct {
-	Email     string `json:"email" validate:"required,email"`
-	Password  string `json:"password" validate:"required,gte=0,lte=25"`
-	FirstName string `json:"first_name" validate:"required,gte=0,lte=25"`
-	LastName  string `json:"last_name" validate:"required,gte=0,lte=25"`
+type UserLogin struct {
+	UserEmail    string `json:"email" validate:"required,email"`
+	UserPassword string `json:"password" validate:"required"`
 }
 
 type UserUpdate struct {

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"net/http"
-	"strconv"
 	"user-service/internal/services"
 	"user-service/internal/vo"
 	"user-service/pkg/response"
@@ -22,18 +21,24 @@ func NewUserController(us services.IUserService) *UserController {
 }
 
 func (uc *UserController) GetUser(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil || id <= 0 {
-		response.ErrResponse(ctx, http.StatusBadRequest, response.Msg[response.ErrPlsTryAgainLater], nil)
-		return
-	}
+	// id, err := strconv.Atoi(ctx.Param("id"))
+	// if err != nil || id <= 0 {
+	// 	response.ErrResponse(ctx, http.StatusBadRequest, response.Msg[response.ErrPlsTryAgainLater], nil)
+	// 	return
+	// }
 
-	data, err := uc.userService.GetUserById(ctx, id)
+	// data, err := uc.userService.GetUserById(ctx, id)
 
-	if err != nil {
-		response.ErrResponse(ctx, http.StatusNotFound, "Not found", nil)
-		return
-	}
+	// if err != nil {
+	// 	response.ErrResponse(ctx, http.StatusNotFound, "Not found", nil)
+	// 	return
+	// }
+	data := 1
+	response.SuccessResponse(ctx, http.StatusOK, data)
+}
+
+func (uc *UserController) GetListUsers(ctx *gin.Context) {
+	data := 123
 	response.SuccessResponse(ctx, http.StatusOK, data)
 }
 
@@ -57,6 +62,27 @@ func (uc *UserController) Register(ctx *gin.Context) {
 	}
 
 	response.SuccessResponse(ctx, http.StatusOK, data)
+}
+
+func (uc *UserController) Login(ctx *gin.Context) {
+	user := vo.UserLogin{}
+
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		response.ErrResponse(ctx, http.StatusBadRequest, "Invalid request payload", err.Error())
+		return
+	}
+
+	if err := validations.ValidateFunc(user); err != nil {
+		response.ErrResponse(ctx, http.StatusBadRequest, "Validation failed", err)
+		return
+	}
+
+	codeResult, data, err := uc.userService.Login(ctx, &user)
+	if err != nil {
+		response.ErrResponse(ctx, response.ErrCodeParamInvalid, err.Error(), "")
+		return
+	}
+	response.SuccessResponse(ctx, codeResult, data)
 }
 
 func (uc *UserController) UpdateUser(ctx *gin.Context) {

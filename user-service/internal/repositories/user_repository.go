@@ -4,14 +4,16 @@ import (
 	"context"
 	"user-service/global"
 	"user-service/internal/database"
+	"user-service/pkg/response"
 )
 
 type (
 	IUserRepository interface {
-		FindById(ctx context.Context, id int) (*database.User, error)
-		FindByEmail(ctx context.Context, email string) (*database.User, error)
-		Create(ctx context.Context, user *database.User) (int, error)
+		// FindById(ctx context.Context, id int) (*database.User, error)
+		Create(ctx context.Context, user *database.InsertUserBaseParams) (int, error)
 		Update(ctx context.Context) int
+		CheckUserEmail(ctx context.Context, email string) (int64, error)
+		FindUserByEmail(ctx context.Context, email string) (*database.UserBase, error)
 	}
 
 	userRepository struct {
@@ -25,39 +27,34 @@ func NewUserRepository() IUserRepository {
 	}
 }
 
-func (userRepo *userRepository) FindById(ctx context.Context, id int) (*database.User, error) {
-	user, err := userRepo.db.FindById(ctx, 1)
+func (userRpo *userRepository) FindUserByEmail(ctx context.Context, email string) (*database.UserBase, error) {
+	data, err := userRpo.db.FindUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return &data, nil
 }
 
-func (userRepo *userRepository) FindByEmail(ctx context.Context, email string) (*database.User, error) {
-	user, err := userRepo.db.FindByEmail(ctx, email)
+func (userRepo *userRepository) CheckUserEmail(ctx context.Context, email string) (int64, error) {
+	data, err := userRepo.db.CheckUserExists(ctx, email)
 
 	if err != nil {
-		return nil, err
+		return -1, err
 	}
 
-	return &user, nil
+	return data, nil
 }
 
-func (userRepo *userRepository) Create(ctx context.Context, user *database.User) (int, error) {
-	userCreate := database.CreateParams{
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-		Password:  user.Password,
-	}
-	_, err := userRepo.db.Create(ctx, userCreate)
+func (userRepo *userRepository) Create(ctx context.Context, user *database.InsertUserBaseParams) (int, error) {
+
+	_, err := userRepo.db.InsertUserBase(ctx, *user)
 
 	if err != nil {
-		return 1, err
+		return response.ErrPlsTryAgainLater, err
 	}
 
-	return 1, nil
+	return response.ErrCodeSuccess, nil
 }
 
 func (userRepo *userRepository) Update(ctx context.Context) int {
