@@ -1,7 +1,7 @@
 package user
 
 import (
-	"user-service/internal/wire"
+	"user-service/internal/controller/user"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,13 +9,10 @@ import (
 type UserRouter struct{}
 
 func (ur *UserRouter) InitUserRouter(r *gin.RouterGroup) {
-	userController, _ := wire.InitUserRouterHandler()
 
 	userRouterPublic := r.Group("/user")
 	{
-		userRouterPublic.GET("/:id", userController.GetUser)
-		userRouterPublic.POST("/register", userController.Register)
-		userRouterPublic.POST("/login", userController.Login)
-		userRouterPublic.PATCH("/:id", userController.UpdateUser)
+		userRouterPublic.POST("/register", user.Login.Register)
+		userRouterPublic.POST("/login", user.Login.Register)
 	}
 }

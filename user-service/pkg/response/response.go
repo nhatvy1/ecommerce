@@ -13,23 +13,21 @@ type ResponseData struct {
 }
 
 type ErrorResponseData struct {
-	Code   int         `json:"code"`
-	Err    string      `json:"error"`
-	Detail interface{} `json:"detail"`
+	Code    int         `json:"code"`
+	Message interface{} `json:"message"`
 }
 
-func SuccessResponse(ctx *gin.Context, code int, data interface{}) {
+func SuccessResponse(ctx *gin.Context, httpCode int, data interface{}) {
 	ctx.JSON(http.StatusOK, ResponseData{
-		Code:    code,
+		Code:    httpCode,
 		Message: "Success",
 		Data:    data,
 	})
 }
 
-func ErrResponse(ctx *gin.Context, code int, message string, detail interface{}) {
-	ctx.JSON(http.StatusOK, ErrorResponseData{
-		Code:   code,
-		Err:    message,
-		Detail: detail,
+func ErrResponse(ctx *gin.Context, httpCode int, message interface{}) {
+	ctx.JSON(httpCode, ErrorResponseData{
+		Code:    httpCode,
+		Message: message,
 	})
 }

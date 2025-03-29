@@ -11,6 +11,7 @@ func Run() *gin.Engine {
 
 	// InitDbWithGorm()
 	InitMysqlC()
+	InitServiceInterface()
 
 	validations.InitValidator()
 
