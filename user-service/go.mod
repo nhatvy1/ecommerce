@@ -4,7 +4,7 @@ go 1.23.5
 
 require (
 	github.com/go-playground/validator/v10 v10.20.0
-	github.com/go-sql-driver/mysql v1.9.0
+	github.com/go-sql-driver/mysql v1.9.1
 	github.com/jinzhu/copier v0.4.0
 	github.com/spf13/viper v1.19.0
 )

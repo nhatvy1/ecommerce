@@ -22,6 +22,10 @@ func InitMysqlC() {
 	var s = fmt.Sprintf(dsn, m.Username, m.Password, m.Host, m.Port, m.DbName)
 	db, err := sql.Open("mysql", s)
 	checkErrorPanic(err, "InitMysql initialization error")
+
+	err = db.Ping()
+	checkErrorPanic(err, "Failed to connect to MySQL database")
+
 	// global.Logger.Info("Initializing MySQL Successfully sql")
 	global.MySQL_SQLC = db
 

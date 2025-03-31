@@ -25,8 +25,6 @@ type UserBase struct {
 type UserInfo struct {
 	// User ID
 	UserID uint64
-	// User account
-	UserAccount string
 	// User nickname
 	UserNickname sql.NullString
 	// User avatar

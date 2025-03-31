@@ -2,6 +2,7 @@ package user_impl
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -28,10 +29,8 @@ func NewUserLoginImpl(r *database.Queries) *userLogin {
 func (u *userLogin) Login(ctx context.Context) {}
 
 func (u *userLogin) Register(ctx context.Context, body *model.UserRegister) (int, int, error) {
-	// 1. hash email
 	hashAccount := crypto.GetHash(body.UserAccount)
 
-	// 2. check user exists
 	userFound, err := u.r.CheckUserBaseExists(ctx, body.UserAccount)
 	if err != nil {
 		return -1, http.StatusNotFound, err
@@ -43,18 +42,28 @@ func (u *userLogin) Register(ctx context.Context, body *model.UserRegister) (int
 
 	userKey := auth.SetKeyOTP(hashAccount)
 	otpNew := random.GenerateOTP()
+
 	err = global.Rdb.SetEx(ctx, userKey, strconv.Itoa(otpNew), time.Duration(consts.TIME_OTP_REGISTER)*time.Second).Err()
+	if err != nil {
+		return -1, http.StatusBadRequest, fmt.Errorf("please try again later")
+	}
 
-	fmt.Println(err)
-	fmt.Println("user key: ", userKey)
-	return 1, http.StatusOK, nil
+	dataVerify := database.InsertUserVerifyParams{
+		VerifyOtp:     strconv.Itoa(otpNew),
+		VerifyKey:     body.UserAccount,
+		VerifyType:    sql.NullInt32{Int32: 1, Valid: true},
+		VerifyKeyHash: userKey,
+	}
+	if err := u.r.InsertUserVerify(ctx, dataVerify); err != nil {
+		return -1, http.StatusBadRequest, fmt.Errorf("please try again later")
+	}
 
-	// 3. create OTP
-	// 4. generate OTP
-	// 5. save OTP in redis with expiration time
 	// 6. send OTP
+	fmt.Printf("User key: %s\n", userKey)
+	fmt.Printf("Send OTP: %s\n", strconv.Itoa(otpNew))
 
 	// return 1, http.StatusBadRequest, fmt.Errorf("not found")
+	return 1, http.StatusOK, nil
 }
 
 func (u *userLogin) Verify(ctx context.Context) {}
