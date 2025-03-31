@@ -1,0 +1,37 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: redis_server
+    restart: unless-stopped
+    ports:
+      - "8812:6379"
+    environment:
+      - REDIS_PASSWORD=123456
+    command: [ "redis-server", "--requirepass", "123456" ]
+    volumes:
+      - redis_data:/redis_data
+    networks:
+      - my_network
+
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "8811:3306"
+    volumes:
+      - mysql-volume:/var/lib/mysql:rw
+      - ./mysql-db:/docker-entrypoint-initdb.d/
+    networks:
+      - my_network
+
+volumes:
+  redis_data:
+  mysql-volume:
+
+networks:
+  my_network:
+    driver: bridge

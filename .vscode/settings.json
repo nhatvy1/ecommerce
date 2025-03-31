@@ -8,6 +8,8 @@
     "sqlgen",
     "sqlc",
     "execresult",
-    "narg"
+    "narg",
+    "requirepass",
+    "initdb"
   ]
 }
