@@ -6,8 +6,10 @@ import (
 	"user-service/internal/model"
 	"user-service/internal/services"
 	"user-service/pkg/response"
+	"user-service/pkg/utils/validations"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 var Login = new(UserLogin)
@@ -26,15 +28,17 @@ func (c *UserLogin) Register(ctx *gin.Context) {
 		return
 	}
 
-	data, code, err := services.UserLogin().Register(ctx, &body)
-	fmt.Println(err)
-	if err != nil {
-		fmt.Println("err: ", err)
-		response.ErrResponse(ctx, code, "ds")
+	if err := validations.ValidateFunc(body); err != nil {
+		response.ErrResponse(ctx, http.StatusBadRequest, err)
 		return
 	}
-	fmt.Println("err2: ", err)
 
+	data, code, err := services.UserLogin().Register(ctx, &body)
+	if err != nil {
+		fmt.Println(zap.Error(err))
+		response.ErrResponse(ctx, code, err.Error())
+		return
+	}
 	response.SuccessResponse(ctx, http.StatusOK, data)
 }
 

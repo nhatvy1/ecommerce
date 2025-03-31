@@ -8,10 +8,10 @@ import (
 
 func Run() *gin.Engine {
 	LoadConfig()
-
-	// InitDbWithGorm()
+	InitLogger()
 	InitMysqlC()
 	InitServiceInterface()
+	InitRedis()
 
 	validations.InitValidator()
 

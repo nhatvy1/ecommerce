@@ -1,24 +1,24 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS `user_info` (
-    verify_id INT AUTO_INCREMENT PRIMARY KEY,             -- ID of the OTP record
-    verify_otp VARCHAR(6) NOT NULL,                       -- OTP code (verification code)
-    verify_key VARCHAR(255) NOT NULL,                     -- verify_key: User's email (or phone number) to identify the OTP recipient
-    verify_key_hash VARCHAR(255) NOT NULL,                -- verify_key_hash: User's email (or phone number) to identify the OTP recipient
-    verify_type INT DEFAULT 1,                            -- 1: Email, 2: Phone, 3:... (Type of verification)
-    is_verified INT DEFAULT 0,                            -- 0: No, 1: Yes - OTP verification status (default is not verified)
-    is_deleted INT DEFAULT 0,                             -- 0: No, 1: Yes - Deletion status
-    verify_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Record creation time
-    verify_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Record update time
+CREATE TABLE IF NOT EXISTS `user_base` (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,             -- User ID
+    user_account VARCHAR(255) NOT NULL,                 -- User account (used to verify identity)
+    user_password VARCHAR(255) NOT NULL,                -- User password
+    user_salt VARCHAR(255) NOT NULL,                    -- Salt used for password encryption
+    -- isTwoFactorEnabled
+    user_login_time TIMESTAMP NULL DEFAULT NULL,        -- Last login time
+    user_logout_time TIMESTAMP NULL DEFAULT NULL,       -- Last logout time
+    user_login_ip VARCHAR(45) NULL,                     -- Login IP address (45 characters to support IPv6)
 
-    INDEX idx_verify_otp (verify_otp),
+    user_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Record creation time
+    user_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Record update time
 
-    UNIQUE KEY unique_verify_key (verify_key)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    -- Ensure user_account is unique
+    UNIQUE KEY unique_user_account (user_account)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='user_base';
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS `user_info`;
+DROP TABLE IF EXISTS `user_base`;
 -- +goose StatementEnd
-

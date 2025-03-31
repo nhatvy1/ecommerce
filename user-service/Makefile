@@ -11,7 +11,10 @@ goose_down:
 goose_reset:
 	@GOOSE_DRIVER=$(GOOSE_DRIVER) GOOSE_DBSTRING=$(GOOSE_DBSTRING) goose -dir=$(GOOSE_MIGRATION_DIR) reset
 
+docker_up:
+	docker-compose up -d
+
 sqlgen:
 	sqlc generate
 
-.PHONY: goose_up goose_down goose_reset sq
+.PHONY: goose_up goose_down goose_reset sqlgen docker_up

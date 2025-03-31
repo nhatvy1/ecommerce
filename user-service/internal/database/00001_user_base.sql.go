@@ -7,152 +7,17 @@ package database
 
 import (
 	"context"
-	"database/sql"
-	"time"
 )
 
-const checkUserExists = `-- name: CheckUserExists :one
+const checkUserBaseExists = `-- name: CheckUserBaseExists :one
 select count(*)
-from ` + "`" + `user_base` + "`" + `
-where user_email = ?
+from user_base
+where user_account = ?
 `
 
-func (q *Queries) CheckUserExists(ctx context.Context, userEmail string) (int64, error) {
-	row := q.db.QueryRowContext(ctx, checkUserExists, userEmail)
+func (q *Queries) CheckUserBaseExists(ctx context.Context, userAccount string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, checkUserBaseExists, userAccount)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
-}
-
-const findListUsers = `-- name: FindListUsers :many
-select ` + "`" + `user_id` + "`" + `, ` + "`" + `user_password` + "`" + `, ` + "`" + `user_salt` + "`" + `, ` + "`" + `user_email` + "`" + `
-      ` + "`" + `user_created_at` + "`" + `, ` + "`" + `user_updated_at` + "`" + `
-from ` + "`" + `user_base` + "`" + `
-limit 0, 20
-`
-
-type FindListUsersRow struct {
-	UserID        int64
-	UserPassword  string
-	UserSalt      string
-	UserCreatedAt string
-	UserUpdatedAt time.Time
-}
-
-func (q *Queries) FindListUsers(ctx context.Context) ([]FindListUsersRow, error) {
-	rows, err := q.db.QueryContext(ctx, findListUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []FindListUsersRow
-	for rows.Next() {
-		var i FindListUsersRow
-		if err := rows.Scan(
-			&i.UserID,
-			&i.UserPassword,
-			&i.UserSalt,
-			&i.UserCreatedAt,
-			&i.UserUpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const findUserByEmail = `-- name: FindUserByEmail :one
-select user_id, user_email, user_password, user_salt, user_created_at, user_updated_at
-from ` + "`" + `user_base` + "`" + `
-where user_email = ?
-`
-
-func (q *Queries) FindUserByEmail(ctx context.Context, userEmail string) (UserBase, error) {
-	row := q.db.QueryRowContext(ctx, findUserByEmail, userEmail)
-	var i UserBase
-	err := row.Scan(
-		&i.UserID,
-		&i.UserEmail,
-		&i.UserPassword,
-		&i.UserSalt,
-		&i.UserCreatedAt,
-		&i.UserUpdatedAt,
-	)
-	return i, err
-}
-
-const findUserInfoAdmin = `-- name: FindUserInfoAdmin :one
-select ` + "`" + `user_id` + "`" + `, ` + "`" + `user_password` + "`" + `, ` + "`" + `user_salt` + "`" + `, ` + "`" + `user_email` + "`" + `
-      ` + "`" + `user_created_at` + "`" + `, ` + "`" + `user_updated_at` + "`" + `
-from ` + "`" + `user_base` + "`" + `
-where user_email = ?
-`
-
-type FindUserInfoAdminRow struct {
-	UserID        int64
-	UserPassword  string
-	UserSalt      string
-	UserCreatedAt string
-	UserUpdatedAt time.Time
-}
-
-func (q *Queries) FindUserInfoAdmin(ctx context.Context, userEmail string) (FindUserInfoAdminRow, error) {
-	row := q.db.QueryRowContext(ctx, findUserInfoAdmin, userEmail)
-	var i FindUserInfoAdminRow
-	err := row.Scan(
-		&i.UserID,
-		&i.UserPassword,
-		&i.UserSalt,
-		&i.UserCreatedAt,
-		&i.UserUpdatedAt,
-	)
-	return i, err
-}
-
-const insertUserBase = `-- name: InsertUserBase :execresult
-insert into ` + "`" + `user_base` + "`" + ` (
-  ` + "`" + `user_email` + "`" + `, ` + "`" + `user_password` + "`" + `, ` + "`" + `user_salt` + "`" + `,
-  ` + "`" + `user_created_at` + "`" + `, ` + "`" + `user_updated_at` + "`" + `
-) values (
-  ?, ?, ?, NOW(), NOW()
-)
-`
-
-type InsertUserBaseParams struct {
-	UserEmail    string
-	UserPassword string
-	UserSalt     string
-}
-
-func (q *Queries) InsertUserBase(ctx context.Context, arg InsertUserBaseParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, insertUserBase, arg.UserEmail, arg.UserPassword, arg.UserSalt)
-}
-
-const updateUserBase = `-- name: UpdateUserBase :exec
-update ` + "`" + `user_base` + "`" + ` 
-set
-  user_email = coalesce(sql.narg('user_email'), user_email),
-  user_password = coalesce(?, user_password),
-  user_salt = coalesce(?, user_salt),
-  
-  updated_at = NOW()
-where user_id = ?
-`
-
-type UpdateUserBaseParams struct {
-	UserPassword sql.NullString
-	UserSalt     sql.NullString
-	UserID       sql.NullInt64
-}
-
-func (q *Queries) UpdateUserBase(ctx context.Context, arg UpdateUserBaseParams) error {
-	_, err := q.db.ExecContext(ctx, updateUserBase, arg.UserPassword, arg.UserSalt, arg.UserID)
-	return err
 }

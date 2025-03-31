@@ -15,3 +15,15 @@ jwt:
   JWT_EXPIRATION: 1h
   API_SECRET: "xxx.yyy.zzz"
 salt: 16
+redis:
+  host: 127.0.0.1
+  port: 8812
+  password: 123456
+  database: 0
+logger:
+  log_level: debug
+  file_log_name: "./storages/logs/dev.001.log"
+  max_backups: 30
+  max_age: 7
+  max_size: 1024
+  compress: true

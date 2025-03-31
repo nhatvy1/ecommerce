@@ -26,3 +26,10 @@ func MatchingPassword(storeHash string, password string, salt string) bool {
 	HashPassword := HashPassword(password, salt)
 	return storeHash == HashPassword
 }
+
+func GetHash(key string) string {
+	hash := sha256.New()
+	hash.Write([]byte(key))
+	hashBytes := hash.Sum(nil)
+	return hex.EncodeToString(hashBytes)
+}
