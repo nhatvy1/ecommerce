@@ -12,9 +12,10 @@ create table if not exists user_verify (
   verify_created_at timestamp default current_timestamp,
   verify_updated_at timestamp default current_timestamp on update current_timestamp,
 
-  index idex_verify_otp (verify_otp),
+  user_base_id int not null,
+  foreign key (user_base_id) references user_base(user_id),
 
-  unique key unique_verify_key (verify_key)
+  index idex_verify_otp (verify_otp)
 ) engine=InnoDB default charset=utf8mb4
 -- +goose StatementEnd
 

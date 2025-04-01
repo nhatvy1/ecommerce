@@ -11,5 +11,6 @@ func InitServiceInterface() {
 	queries := database.New(global.MySQL_SQLC)
 
 	// user service interface
-	services.InitUserLogin(user_impl.NewUserLoginImpl(queries))
+	registerFactory := user_impl.NewRegisterFactory(queries)
+	services.InitUserLogin(user_impl.NewUserLoginImpl(queries, registerFactory))
 }

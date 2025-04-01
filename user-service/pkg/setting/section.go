@@ -6,6 +6,7 @@ type Config struct {
 	Mysql  MySQLSetting  `mapstructure:"mysql"`
 	Redis  RedisSetting  `mapstructure:"redis"`
 	Logger LoggerSetting `mapstructure:"logger"`
+	Salt   string        `mapstructure:"salt"`
 }
 
 type ServerSetting struct {
