@@ -20,16 +20,15 @@ type (
 		GetListUsers(ctx context.Context)
 	}
 
-	IRegisterStrategy interface {
-		Execute(ctx context.Context, body *model.UserRegister) (int, int, error)
+	IAuthStrategy interface {
+		Register(ctx context.Context, body *model.UserRegister) (int, int, error)
 	}
 )
 
 var (
-	localUserLogin        IUserLogin
-	localUserInfo         IUserInfo
-	localUserAdmin        IUserAdmin
-	localRegisterStrategy IRegisterStrategy
+	localUserLogin IUserLogin
+	localUserInfo  IUserInfo
+	localUserAdmin IUserAdmin
 )
 
 func UserLogin() IUserLogin {
@@ -63,15 +62,4 @@ func UserAdmin() IUserAdmin {
 
 func InitUserAdmin(i IUserAdmin) {
 	localUserAdmin = i
-}
-
-func RegisterStrategy() IRegisterStrategy {
-	if localRegisterStrategy == nil {
-		panic("implement register_strategy not found")
-	}
-	return localRegisterStrategy
-}
-
-func InitRegisterStrategy(i IRegisterStrategy) {
-	localRegisterStrategy = i
 }

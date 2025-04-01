@@ -2,64 +2,48 @@ package user_impl
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 	"user-service/internal/database"
 	"user-service/internal/model"
+	"user-service/internal/services"
+	auth_strategies "user-service/internal/services/strategies/auth"
 )
 
 type userLogin struct {
-	db              *database.Queries
-	registerFactory *RegisterFactory
+	db                 *database.Queries
+	registerStrategies map[string]services.IAuthStrategy
 }
 
-func NewUserLoginImpl(db *database.Queries, registerFactory *RegisterFactory) *userLogin {
+func NewUserLoginImpl(db *database.Queries) *userLogin {
 	return &userLogin{
-		db:              db,
-		registerFactory: registerFactory,
+		db: db,
+		registerStrategies: map[string]services.IAuthStrategy{
+			"email": auth_strategies.NewEmailStrategy(db),
+			"phone": auth_strategies.NewPhoneStrategy(db),
+		},
 	}
 }
 
 func (u *userLogin) Login(ctx context.Context) {}
 
 func (u *userLogin) Register(ctx context.Context, body *model.UserRegister) (int, int, error) {
-	// userFound, err := u.r.CheckUserBaseExists(ctx, body.UserAccount)
-	// if err != nil {
-	// 	return -1, http.StatusNotFound, err
-	// }
+	accountType := body.AccountType
+	var accountTypename string
 
-	// if userFound > 0 {
-	// 	return -1, http.StatusConflict, fmt.Errorf("user has already registered")
-	// }
-
-	// hashAccount := crypto.GetHash(body.UserAccount)
-	// userKey := auth.SetKeyOTP(hashAccount)
-	// otpNew := random.GenerateOTP()
-
-	// err = global.Rdb.SetEx(ctx, userKey, strconv.Itoa(otpNew), time.Duration(consts.TIME_OTP_REGISTER)*time.Second).Err()
-	// if err != nil {
-	// 	return -1, http.StatusBadRequest, fmt.Errorf("please try again later")
-	// }
-
-	// dataVerify := database.InsertUserVerifyParams{
-	// 	VerifyOtp:     strconv.Itoa(otpNew),
-	// 	VerifyKey:     body.UserAccount,
-	// 	VerifyType:    sql.NullInt32{Int32: 1, Valid: true},
-	// 	VerifyKeyHash: userKey,
-	// }
-	// if err := u.r.InsertUserVerify(ctx, dataVerify); err != nil {
-	// 	return -1, http.StatusBadRequest, fmt.Errorf("please try again later")
-	// }
-
-	// 6. send OTP
-	// fmt.Printf("User key: %s\n", userKey)
-	// fmt.Printf("Send OTP: %s\n", strconv.Itoa(otpNew))
-	strategy, err := u.registerFactory.GetStrategy(body)
-	if err != nil {
-		return -1, http.StatusBadRequest, fmt.Errorf("vui lòng thử lại sau")
+	switch accountType {
+	case "1":
+		accountTypename = "email"
+	case "2":
+		accountTypename = "phone"
+	default:
+		accountTypename = "unknown"
 	}
 
-	return strategy.Execute(ctx, body)
+	strategy, ok := u.registerStrategies[accountTypename]
+	if !ok {
+		strategy = &auth_strategies.DefaultRegisterStrategy{}
+	}
+
+	return strategy.Register(ctx, body)
 }
 
 func (u *userLogin) Verify(ctx context.Context) {}

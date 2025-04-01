@@ -33,6 +33,7 @@ coverage.out
 # Temporary files
 tmp/
 *.tmp
+.air.toml
 
 # Private keys and credentials (nếu có)
 *.key
