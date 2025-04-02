@@ -7,6 +7,9 @@ const (
 	ErrPlsTryAgainLater  = 40003
 	ErrCodeUserHasExists = 50001 // User has already registered,
 	ErrCodeAuthFailed    = 40005
+
+	OtpWaiting = 22203
+	ErrRedis   = 22012
 )
 
 var Msg = map[int]string{
@@ -16,4 +19,5 @@ var Msg = map[int]string{
 	ErrPlsTryAgainLater:  "please try again later",
 	ErrCodeUserHasExists: "user has already registered",
 	ErrCodeAuthFailed:    "Authentication failed",
+	OtpWaiting:           "please wait 90 seconds",
 }

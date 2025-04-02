@@ -10,6 +10,29 @@ import (
 	"database/sql"
 )
 
+const getInfoOTP = `-- name: GetInfoOTP :one
+select verify_id, verify_otp, verify_key, verify_key_hash, verify_type, is_verified, is_deleted, verify_created_at, verify_updated_at
+from ` + "`" + `user_verify` + "`" + `
+where verify_key_hash = ?
+`
+
+func (q *Queries) GetInfoOTP(ctx context.Context, verifyKeyHash string) (UserVerify, error) {
+	row := q.db.QueryRowContext(ctx, getInfoOTP, verifyKeyHash)
+	var i UserVerify
+	err := row.Scan(
+		&i.VerifyID,
+		&i.VerifyOtp,
+		&i.VerifyKey,
+		&i.VerifyKeyHash,
+		&i.VerifyType,
+		&i.IsVerified,
+		&i.IsDeleted,
+		&i.VerifyCreatedAt,
+		&i.VerifyUpdatedAt,
+	)
+	return i, err
+}
+
 const insertUserVerify = `-- name: InsertUserVerify :exec
 insert into user_verify (
   verify_otp,
@@ -35,5 +58,17 @@ func (q *Queries) InsertUserVerify(ctx context.Context, arg InsertUserVerifyPara
 		arg.VerifyKeyHash,
 		arg.VerifyType,
 	)
+	return err
+}
+
+const updateVerificationStatus = `-- name: UpdateVerificationStatus :exec
+update user_verify
+set is_verified = 1,
+    verify_created_at = now()
+where verify_key_hash = ?
+`
+
+func (q *Queries) UpdateVerificationStatus(ctx context.Context, verifyKeyHash string) error {
+	_, err := q.db.ExecContext(ctx, updateVerificationStatus, verifyKeyHash)
 	return err
 }

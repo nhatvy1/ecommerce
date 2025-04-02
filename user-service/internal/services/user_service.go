@@ -9,7 +9,7 @@ type (
 	IUserLogin interface {
 		Login(ctx context.Context)
 		Register(ctx context.Context, body *model.UserRegister) (int, int, error)
-		Verify(ctx context.Context)
+		VerifyOTP(ctx context.Context, body *model.VerifyInput) (out model.VerifyOtpOutput, err error)
 	}
 
 	IUserInfo interface {
